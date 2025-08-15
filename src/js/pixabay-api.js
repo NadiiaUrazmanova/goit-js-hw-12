@@ -7,7 +7,7 @@ export const perPage = 15;
 const loadMoreEl = document.querySelector('.load-more');
 
 
-export function getImagesByQuery(query, page = 1) {
+export async function getImagesByQuery(query, page = 1) {
     const searchParams = new URLSearchParams({
         key: '51651971-b67330e54672f93571a43cb22',
         q: query,
@@ -15,19 +15,17 @@ export function getImagesByQuery(query, page = 1) {
         orientation: 'horizontal',
         safesearch: true
     });
-    return axios
-        .get(`https://pixabay.com/api/?${searchParams}&page=${page}&per_page=${perPage}`)
-        .then(response => response.data)
-        .catch(error => {
-            iziToast.error({
-                title: 'Error',
-                message: `Error: ${error}`,
-                position: 'topRight'
-            });
-            throw error;
-        }); 
-    
+    try {
+        const response = await axios.get(`https://pixabay.com/api/?${searchParams}&page=${page}&per_page=${perPage}`);
+        return response.data;
+    }
+        
+    catch (error) {
+        iziToast.error({
+        title: 'Error',
+        message: `Error: ${error}`,
+        position: 'topRight'
+        });
+        throw error;
+    }     
 }
-
-
-    

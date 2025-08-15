@@ -18,6 +18,7 @@ const galleryEl = document.querySelector('.gallery');
 
 let query = '';
 let currentPage = 1;
+let totalPages = 0;
 
 formEl.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -53,7 +54,7 @@ formEl.addEventListener('submit', async (e) => {
 
     createGallery(data.hits);
 
-    const totalPages = Math.ceil(data.totalHits / perPage);
+    totalPages = Math.ceil(data.totalHits / perPage);
     if (currentPage < totalPages) {
       showLoadMoreButton();
     } else {
@@ -73,22 +74,25 @@ formEl.addEventListener('submit', async (e) => {
 
 loadMoreEl.addEventListener('click', async () => {
   currentPage += 1;
-  showLoader();
+  
 
   try {
+    showLoader();
     const data = await getImagesByQuery(query, currentPage);
     createGallery(data.hits, true);
 
-    let elem = document.querySelector('.gallery').firstElementChild;
-    const elemHeight = elem.getBoundingClientRect().height;
-    const elemTwoHeight = 2 * elemHeight;
-    window.scrollBy({
-      top: elemTwoHeight,      
-      behavior: "smooth",
-});
+    if (galleryEl.firstElementChild) {
+
+      const elem = galleryEl.firstElementChild;
+      const elemHeight = elem.getBoundingClientRect().height;
+      const elemTwoHeight = 2 * elemHeight;
+      window.scrollBy({
+        top: elemTwoHeight,
+        behavior: "smooth",
+      });
+    }
 
 
-    const totalPages = Math.ceil(data.totalHits / perPage);
     if (currentPage >= totalPages) {
       hideLoadMoreButton();
       iziToast.info({
